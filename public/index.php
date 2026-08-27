@@ -1,8 +1,22 @@
 <?php
-ini_set('display_errors', 1); error_reporting(E_ALL);
-require_once __DIR__ . '/../config/db.php';
+session_start();
 
-$db = new Database();
-$pdo = $db->connect();
+$controllerName = $_GET['controller'] ?? 'auth';
+$action = $_GET['action'] ?? 'login';
 
-echo "Connexion réussie à la base de données !";
+$controllerFile = __DIR__ . '/../app/controllers/' . ucfirst($controllerName) . 'Controller.php';
+
+if (!file_exists($controllerFile)) {
+    die("Contrôleur introuvable : " . $controllerName);
+}
+
+require_once $controllerFile;
+
+$controllerClass = ucfirst($controllerName) . 'Controller';
+$controller = new $controllerClass();
+
+if (!method_exists($controller, $action)) {
+    die("Action introuvable : " . $action);
+}
+
+$controller->$action();
