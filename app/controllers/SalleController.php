@@ -25,13 +25,13 @@ class SalleController
     public function index(): void
     {
         $salles = $this->salleModel->getAll();
-        require __DIR__ . '/../views/salles/index.php';
+        require __DIR__ . '/../views/backend/salles/index.php';
     }
 
     public function create(): void
     {
         $etagesDisponibles = $this->batimentModel->getAllWithEtages();
-        require __DIR__ . '/../views/salles/create.php';
+        require __DIR__ . '/../views/backend/salles/create.php';
     }
 
     public function processCreate(): void
@@ -45,7 +45,7 @@ class SalleController
         if ($etageId === 0 || $nom === '' || $capacite <= 0) {
             $error = "Étage, nom et capacité (> 0) sont requis.";
             $etagesDisponibles = $this->batimentModel->getAllWithEtages();
-            require __DIR__ . '/../views/salles/create.php';
+            require __DIR__ . '/../views/backend/salles/create.php';
             return;
         }
 
@@ -63,7 +63,7 @@ class SalleController
             die("Salle introuvable.");
         }
 
-        require __DIR__ . '/../views/salles/edit.php';
+        require __DIR__ . '/../views/backend/salles/edit.php';
     }
 
     public function processEdit(): void

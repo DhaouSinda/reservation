@@ -8,6 +8,6 @@ class DashboardController
             exit;
         }
 
-        echo "Bienvenue " . htmlspecialchars($_SESSION['user_nom']) . " ! (rôle : " . htmlspecialchars($_SESSION['user_role']) . ")";
+        require __DIR__ . '/../views/frontend/dashboard.php';
     }
 }
