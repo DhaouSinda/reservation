@@ -22,6 +22,7 @@
                class="sidebar-link <?= $currentController === 'dashboard' ? 'active' : '' ?>">
                 <i class="fa-solid fa-gauge"></i> Dashboard
             </a>
+            <?php if (($_SESSION['user_role'] ?? '') === 'admin_batiments'): ?>
             <a href="index.php?controller=batiment&action=index"
                class="sidebar-link <?= $currentController === 'batiment' ? 'active' : '' ?>">
                 <i class="fa-solid fa-building"></i> Bâtiments
@@ -30,10 +31,13 @@
                class="sidebar-link <?= $currentController === 'salle' ? 'active' : '' ?>">
                 <i class="fa-solid fa-door-open"></i> Salles
             </a>
+            <?php endif; ?>
+            <?php if (($_SESSION['user_role'] ?? '') === 'gestionnaire'): ?>
             <a href="index.php?controller=reservation&action=index"
                class="sidebar-link <?= $currentController === 'reservation' ? 'active' : '' ?>">
                 <i class="fa-solid fa-clipboard-list"></i> Réservations
             </a>
+            <?php endif; ?>
         </nav>
 
         <div class="sidebar-footer">

@@ -1,5 +1,11 @@
 <?php require __DIR__ . '/layout_header.php'; ?>
 
+<?php if (($_GET['error'] ?? '') === 'access_denied'): ?>
+    <div class="alert alert-danger mb-4">
+        <i class="fa-solid fa-lock me-1"></i> Vous n'avez pas accès à cette section avec votre rôle actuel.
+    </div>
+<?php endif; ?>
+
 <div class="welcome-banner mb-4">
     <h2><i class="fa-solid fa-hand-wave"></i> Bienvenue, <?= htmlspecialchars($_SESSION['user_nom']) ?> !</h2>
     <p>Voici votre espace de gestion des réservations de salles.</p>

@@ -16,8 +16,13 @@ class BatimentController
 
     private function checkAccess(): void
     {
-        if (empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin_batiments') {
+        if (empty($_SESSION['user_id'])) {
             header('Location: index.php?controller=auth&action=login');
+            exit;
+        }
+
+        if ($_SESSION['user_role'] !== 'admin_batiments') {
+            header('Location: index.php?controller=dashboard&action=index&error=access_denied');
             exit;
         }
     }

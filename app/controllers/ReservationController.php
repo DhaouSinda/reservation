@@ -111,8 +111,14 @@ class ReservationController
 
     private function checkGestionnaire(): void
     {
+        if (empty($_SESSION['user_id'])) {
+            header('Location: index.php?controller=auth&action=login');
+            exit;
+        }
+
         if ($_SESSION['user_role'] !== 'gestionnaire') {
-            die("Accès refusé.");
+            header('Location: index.php?controller=dashboard&action=index&error=access_denied');
+            exit;
         }
     }
 }

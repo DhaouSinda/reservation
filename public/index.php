@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-$controllerName = $_GET['controller'] ?? 'auth';
-$action = $_GET['action'] ?? 'login';
+$controllerName = $_GET['controller'] ?? 'home';
+$action = $_GET['action'] ?? 'index';
 
 $controllerFile = __DIR__ . '/../app/controllers/' . ucfirst($controllerName) . 'Controller.php';
 

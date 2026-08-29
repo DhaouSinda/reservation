@@ -5,6 +5,12 @@
     <p class="page-subtitle">Vue d'ensemble de BookIt</p>
 </div>
 
+<?php if (($_GET['error'] ?? '') === 'access_denied'): ?>
+    <div class="alert alert-danger mb-4">
+        <i class="fa-solid fa-lock me-1"></i> Vous n'avez pas accès à cette section avec votre rôle actuel.
+    </div>
+<?php endif; ?>
+
 <div class="row g-4 mb-4">
     <div class="col-sm-6 col-lg-3">
         <div class="stat-card-color stat-blue">
