@@ -58,4 +58,17 @@ class Salle extends Model
         $stmt = $this->pdo->prepare("DELETE FROM salles WHERE id = :id");
         return $stmt->execute(['id' => $id]);
     }
+
+    public function getAvailable(): array
+    {
+        $stmt = $this->pdo->query(
+            "SELECT s.*, e.numero AS etage_numero, b.nom AS batiment_nom
+             FROM salles s
+             JOIN etages e ON s.etage_id = e.id
+             JOIN batiments b ON e.batiment_id = b.id
+             WHERE s.statut = 'disponible'
+             ORDER BY b.nom, e.numero, s.nom"
+        );
+        return $stmt->fetchAll();
+    }
 }

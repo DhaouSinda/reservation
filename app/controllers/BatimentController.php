@@ -25,12 +25,12 @@ class BatimentController
     public function index(): void
     {
         $batiments = $this->batimentModel->getAll();
-        require __DIR__ . '/../views/batiments/index.php';
+        require __DIR__ . '/../views/backend/batiments/index.php';
     }
 
     public function create(): void
     {
-        require __DIR__ . '/../views/batiments/create.php';
+        require __DIR__ . '/../views/backend/batiments/create.php';
     }
 
     public function processCreate(): void
@@ -41,7 +41,7 @@ class BatimentController
 
         if ($nom === '') {
             $error = "Le nom du bâtiment est requis.";
-            require __DIR__ . '/../views/batiments/create.php';
+            require __DIR__ . '/../views/backend/batiments/create.php';
             return;
         }
 
@@ -71,7 +71,7 @@ class BatimentController
         }
 
         $etages = $this->etageModel->getByBatiment($id);
-        require __DIR__ . '/../views/batiments/edit.php';
+        require __DIR__ . '/../views/backend/batiments/edit.php';
     }
 
     public function processEdit(): void

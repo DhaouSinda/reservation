@@ -12,7 +12,7 @@ class AuthController
 
     public function login(): void
     {
-        require __DIR__ . '/../views/auth/login.php';
+        require __DIR__ . '/../views/frontend/auth/login.php';
     }
 
     public function processLogin(): void
@@ -22,7 +22,7 @@ class AuthController
 
         if ($email === '' || $password === '') {
             $error = "Veuillez remplir tous les champs.";
-            require __DIR__ . '/../views/auth/login.php';
+            require __DIR__ . '/../views/frontend/auth/login.php';
             return;
         }
 
@@ -38,12 +38,12 @@ class AuthController
         }
 
         $error = "Email ou mot de passe incorrect.";
-        require __DIR__ . '/../views/auth/login.php';
+        require __DIR__ . '/../views/frontend/auth/login.php';
     }
 
     public function register(): void
     {
-        require __DIR__ . '/../views/auth/register.php';
+        require __DIR__ . '/../views/frontend/auth/register.php';
     }
 
     public function processRegister(): void
@@ -55,19 +55,19 @@ class AuthController
 
         if ($nom === '' || $prenom === '' || $email === '' || $password === '') {
             $error = "Veuillez remplir tous les champs.";
-            require __DIR__ . '/../views/auth/register.php';
+            require __DIR__ . '/../views/frontend/auth/register.php';
             return;
         }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $error = "Email invalide.";
-            require __DIR__ . '/../views/auth/register.php';
+            require __DIR__ . '/../views/frontend/auth/register.php';
             return;
         }
 
         if ($this->userModel->findByEmail($email)) {
             $error = "Cet email est déjà utilisé.";
-            require __DIR__ . '/../views/auth/register.php';
+            require __DIR__ . '/../views/frontend/auth/register.php';
             return;
         }
 
