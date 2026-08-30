@@ -266,6 +266,7 @@ a:hover {
     font-weight: 600;
     margin-top: 8px;
 }
+
 /* ===== Homepage ===== */
 .hero-section {
     padding: 70px 20px 30px;
@@ -295,6 +296,7 @@ a:hover {
 
 .brand-highlight {
     color: var(--sage);
+    position: relative;
 }
 
 .hero-subtitle {

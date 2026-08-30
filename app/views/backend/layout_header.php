@@ -31,6 +31,10 @@
                class="sidebar-link <?= $currentController === 'salle' ? 'active' : '' ?>">
                 <i class="fa-solid fa-door-open"></i> Salles
             </a>
+            <a href="index.php?controller=statistique&action=index"
+               class="sidebar-link <?= $currentController === 'statistique' ? 'active' : '' ?>">
+                <i class="fa-solid fa-chart-line"></i> Statistiques
+            </a>
             <?php endif; ?>
             <?php if (($_SESSION['user_role'] ?? '') === 'gestionnaire'): ?>
             <a href="index.php?controller=reservation&action=index"

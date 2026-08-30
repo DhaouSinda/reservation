@@ -3,9 +3,14 @@ require_once __DIR__ . '/Model.php';
 
 class Batiment extends Model
 {
-    public function getAll(): array
+    public function getAll(string $recherche = ''): array
     {
-        $stmt = $this->pdo->query("SELECT * FROM batiments ORDER BY nom");
+        if ($recherche !== '') {
+            $stmt = $this->pdo->prepare("SELECT * FROM batiments WHERE nom LIKE :recherche ORDER BY nom");
+            $stmt->execute(['recherche' => '%' . $recherche . '%']);
+        } else {
+            $stmt = $this->pdo->query("SELECT * FROM batiments ORDER BY nom");
+        }
         return $stmt->fetchAll();
     }
 

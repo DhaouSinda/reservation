@@ -22,15 +22,27 @@ class ReservationController
         }
     }
 
+    private function checkUtilisateur(): void
+    {
+        $this->checkLoggedIn();
+
+        if ($_SESSION['user_role'] !== 'utilisateur') {
+            header('Location: index.php?controller=dashboard&action=index&error=access_denied');
+            exit;
+        }
+    }
+
     // Utilisateur: browse available salles + form
     public function create(): void
     {
+        $this->checkUtilisateur();
         $salles = $this->salleModel->getAvailable();
         require __DIR__ . '/../views/frontend/reservations/create.php';
     }
 
     public function processCreate(): void
     {
+        $this->checkUtilisateur();
         $salleId = (int)($_POST['salle_id'] ?? 0);
         $dateDebut = $_POST['date_debut'] ?? '';
         $dateFin = $_POST['date_fin'] ?? '';
@@ -71,12 +83,14 @@ class ReservationController
     // Utilisateur: my reservations history
     public function mine(): void
     {
+        $this->checkUtilisateur();
         $reservations = $this->reservationModel->getByUser((int)$_SESSION['user_id']);
         require __DIR__ . '/../views/frontend/reservations/mine.php';
     }
 
     public function cancel(): void
     {
+        $this->checkUtilisateur();
         $id = (int)($_GET['id'] ?? 0);
         $this->reservationModel->cancel($id, (int)$_SESSION['user_id']);
         header('Location: index.php?controller=reservation&action=mine');
@@ -87,7 +101,15 @@ class ReservationController
     public function index(): void
     {
         $this->checkGestionnaire();
-        $reservations = $this->reservationModel->getAll();
+        $filtres = [
+            'salle_id' => $_GET['salle_id'] ?? '',
+            'statut' => $_GET['statut'] ?? '',
+            'utilisateur' => trim($_GET['utilisateur'] ?? ''),
+            'date_debut' => $_GET['date_debut'] ?? '',
+            'date_fin' => $_GET['date_fin'] ?? '',
+        ];
+        $reservations = $this->reservationModel->getAll($filtres);
+        $salles = $this->salleModel->getAll();
         require __DIR__ . '/../views/backend/reservations/index.php';
     }
 

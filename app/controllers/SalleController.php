@@ -29,7 +29,13 @@ class SalleController
 
     public function index(): void
     {
-        $salles = $this->salleModel->getAll();
+        $filtres = [
+            'recherche' => trim($_GET['recherche'] ?? ''),
+            'batiment_id' => $_GET['batiment_id'] ?? '',
+            'statut' => $_GET['statut'] ?? '',
+        ];
+        $salles = $this->salleModel->getAll($filtres);
+        $batimentsListe = $this->batimentModel->getAll();
         require __DIR__ . '/../views/backend/salles/index.php';
     }
 
@@ -93,6 +99,30 @@ class SalleController
     {
         $id = (int)($_GET['id'] ?? 0);
         $this->salleModel->delete($id);
+        header('Location: index.php?controller=salle&action=index');
+        exit;
+    }
+
+    public function changerStatut(): void
+    {
+        $id = (int)($_GET['id'] ?? 0);
+        $statut = $_GET['statut'] ?? '';
+        $statutsValides = ['disponible', 'maintenance', 'indisponible'];
+
+        if (in_array($statut, $statutsValides, true)) {
+            $salle = $this->salleModel->getById($id);
+            if ($salle) {
+                $this->salleModel->update(
+                    $id,
+                    $salle['nom'],
+                    (int)$salle['capacite'],
+                    $salle['equipements'],
+                    $salle['localisation'],
+                    $statut
+                );
+            }
+        }
+
         header('Location: index.php?controller=salle&action=index');
         exit;
     }

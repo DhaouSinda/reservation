@@ -5,11 +5,61 @@
     <p class="page-subtitle">Validez, refusez ou consultez toutes les demandes</p>
 </div>
 
+<div class="card p-3 mb-4">
+    <form action="index.php" method="GET" class="row g-2 align-items-end">
+        <input type="hidden" name="controller" value="reservation">
+        <input type="hidden" name="action" value="index">
+        <div class="col-md-3">
+            <label class="form-label">Utilisateur</label>
+            <input type="text" name="utilisateur" class="form-control" placeholder="Nom ou prénom..." value="<?= htmlspecialchars($filtres['utilisateur']) ?>">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Salle</label>
+            <select name="salle_id" class="form-select">
+                <option value="">Toutes</option>
+                <?php foreach ($salles as $s): ?>
+                    <option value="<?= $s['id'] ?>" <?= (string)$filtres['salle_id'] === (string)$s['id'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($s['nom']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Statut</label>
+            <select name="statut" class="form-select">
+                <option value="">Tous</option>
+                <option value="en_attente" <?= $filtres['statut'] === 'en_attente' ? 'selected' : '' ?>>En attente</option>
+                <option value="validee" <?= $filtres['statut'] === 'validee' ? 'selected' : '' ?>>Validée</option>
+                <option value="refusee" <?= $filtres['statut'] === 'refusee' ? 'selected' : '' ?>>Refusée</option>
+                <option value="annulee" <?= $filtres['statut'] === 'annulee' ? 'selected' : '' ?>>Annulée</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Du</label>
+            <input type="date" name="date_debut" class="form-control" value="<?= htmlspecialchars($filtres['date_debut']) ?>">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Au</label>
+            <input type="date" name="date_fin" class="form-control" value="<?= htmlspecialchars($filtres['date_fin']) ?>">
+        </div>
+        <div class="col-md-1 d-flex gap-2">
+            <button type="submit" class="btn btn-primary flex-fill"><i class="fa-solid fa-filter"></i></button>
+        </div>
+    </form>
+    <?php if (array_filter($filtres)): ?>
+        <div class="mt-2">
+            <a href="index.php?controller=reservation&action=index" style="font-size: 0.85rem;">
+                <i class="fa-solid fa-xmark"></i> Réinitialiser les filtres
+            </a>
+        </div>
+    <?php endif; ?>
+</div>
+
 <?php if (empty($reservations)): ?>
     <div class="card">
         <div class="empty-state">
             <i class="fa-solid fa-calendar-xmark"></i>
-            <p>Aucune réservation pour le moment.</p>
+            <p>Aucune réservation ne correspond à ces critères.</p>
         </div>
     </div>
 <?php else: ?>

@@ -3,15 +3,39 @@ require_once __DIR__ . '/Model.php';
 
 class Reservation extends Model
 {
-    public function getAll(): array
+    public function getAll(array $filtres = []): array
     {
-        $stmt = $this->pdo->query(
-            "SELECT r.*, s.nom AS salle_nom, u.nom AS user_nom, u.prenom AS user_prenom
-             FROM reservations r
-             JOIN salles s ON r.salle_id = s.id
-             JOIN utilisateurs u ON r.utilisateur_id = u.id
-             ORDER BY r.date_debut DESC"
-        );
+        $sql = "SELECT r.*, s.nom AS salle_nom, u.nom AS user_nom, u.prenom AS user_prenom
+                FROM reservations r
+                JOIN salles s ON r.salle_id = s.id
+                JOIN utilisateurs u ON r.utilisateur_id = u.id
+                WHERE 1=1";
+        $params = [];
+
+        if (!empty($filtres['salle_id'])) {
+            $sql .= " AND r.salle_id = :salle_id";
+            $params['salle_id'] = (int)$filtres['salle_id'];
+        }
+        if (!empty($filtres['statut'])) {
+            $sql .= " AND r.statut = :statut";
+            $params['statut'] = $filtres['statut'];
+        }
+        if (!empty($filtres['utilisateur'])) {
+            $sql .= " AND (u.nom LIKE :utilisateur OR u.prenom LIKE :utilisateur)";
+            $params['utilisateur'] = '%' . $filtres['utilisateur'] . '%';
+        }
+        if (!empty($filtres['date_debut'])) {
+            $sql .= " AND r.date_debut >= :date_debut";
+            $params['date_debut'] = $filtres['date_debut'] . ' 00:00:00';
+        }
+        if (!empty($filtres['date_fin'])) {
+            $sql .= " AND r.date_debut <= :date_fin";
+            $params['date_fin'] = $filtres['date_fin'] . ' 23:59:59';
+        }
+
+        $sql .= " ORDER BY r.date_debut DESC";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
         return $stmt->fetchAll();
     }
 
@@ -94,5 +118,41 @@ class Reservation extends Model
     {
         $stmt = $this->pdo->prepare("DELETE FROM reservations WHERE id = :id");
         return $stmt->execute(['id' => $id]);
+    }
+
+    public function getStatsBySalle(): array
+    {
+        $sql = "SELECT s.id, s.nom AS salle_nom, b.nom AS batiment_nom,
+                       COUNT(r.id) AS nombre_reservations,
+                       COALESCE(SUM(TIMESTAMPDIFF(MINUTE, r.date_debut, r.date_fin)), 0) AS minutes_totales
+                FROM salles s
+                JOIN etages e ON s.etage_id = e.id
+                JOIN batiments b ON e.batiment_id = b.id
+                LEFT JOIN reservations r ON r.salle_id = s.id AND r.statut IN ('validee', 'en_attente')
+                GROUP BY s.id, s.nom, b.nom
+                ORDER BY nombre_reservations DESC";
+        $stmt = $this->pdo->query($sql);
+        return $stmt->fetchAll();
+    }
+
+    public function getStatsByStatut(): array
+    {
+        $stmt = $this->pdo->query("SELECT statut, COUNT(*) AS total FROM reservations GROUP BY statut");
+        return $stmt->fetchAll();
+    }
+
+    public function getByPeriod(string $dateDebut, string $dateFin): array
+    {
+        $sql = "SELECT r.*, s.nom AS salle_nom, b.nom AS batiment_nom, u.nom AS user_nom, u.prenom AS user_prenom
+                FROM reservations r
+                JOIN salles s ON r.salle_id = s.id
+                JOIN etages e ON s.etage_id = e.id
+                JOIN batiments b ON e.batiment_id = b.id
+                JOIN utilisateurs u ON r.utilisateur_id = u.id
+                WHERE r.date_debut >= :date_debut AND r.date_debut <= :date_fin
+                ORDER BY r.date_debut ASC";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['date_debut' => $dateDebut, 'date_fin' => $dateFin]);
+        return $stmt->fetchAll();
     }
 }

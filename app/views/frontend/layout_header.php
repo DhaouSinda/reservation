@@ -17,9 +17,11 @@
         </a>
         <div class="d-flex align-items-center">
             <?php if (!empty($_SESSION['user_id'])): ?>
+                <?php if ($_SESSION['user_role'] === 'utilisateur'): ?>
                 <a class="nav-link-pill me-2" href="index.php?controller=reservation&action=mine">
                     <i class="fa-solid fa-calendar-check"></i> Mes réservations
                 </a>
+                <?php endif; ?>
                 <a class="nav-link-pill me-2" href="index.php?controller=dashboard&action=index">
                     <i class="fa-solid fa-gauge"></i> Mon espace
                 </a>
