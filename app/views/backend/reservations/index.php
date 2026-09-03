@@ -1,8 +1,13 @@
 <?php require __DIR__ . '/../layout_header.php'; ?>
 
-<div class="mb-4">
-    <h2 class="page-title"><i class="fa-solid fa-clipboard-list"></i> Gestion des réservations</h2>
-    <p class="page-subtitle">Validez, refusez ou consultez toutes les demandes</p>
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h2 class="page-title"><i class="fa-solid fa-clipboard-list"></i> Gestion des réservations</h2>
+        <p class="page-subtitle">Validez, refusez ou consultez toutes les demandes</p>
+    </div>
+    <a href="index.php?controller=reservation&action=createManuelle" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i> Nouvelle réservation
+    </a>
 </div>
 
 <div class="card p-3 mb-4">
@@ -63,16 +68,30 @@
         </div>
     </div>
 <?php else: ?>
+<?php
+function sortLinkReservation($colKey, $label, $filtres) {
+    $currentTri = $filtres['tri'] ?: 'date_debut';
+    $currentOrdre = $filtres['ordre'] ?: 'DESC';
+    $nextOrdre = ($currentTri === $colKey && $currentOrdre === 'ASC') ? 'DESC' : 'ASC';
+    $params = array_merge($filtres, ['controller' => 'reservation', 'action' => 'index', 'tri' => $colKey, 'ordre' => $nextOrdre]);
+    $icon = '';
+    if ($currentTri === $colKey) {
+        $icon = $currentOrdre === 'ASC' ? ' <i class="fa-solid fa-arrow-up-short-wide"></i>' : ' <i class="fa-solid fa-arrow-down-wide-short"></i>';
+    }
+    return '<a href="index.php?' . http_build_query($params) . '" class="text-decoration-none" style="color: inherit;">' . $label . $icon . '</a>';
+}
+?>
+
 <div class="table-responsive">
     <table class="table align-middle">
         <thead>
         <tr>
-            <th>Utilisateur</th>
-            <th>Salle</th>
-            <th>Début</th>
+            <th><?= sortLinkReservation('utilisateur', 'Utilisateur', $filtres) ?></th>
+            <th><?= sortLinkReservation('salle', 'Salle', $filtres) ?></th>
+            <th><?= sortLinkReservation('date_debut', 'Début', $filtres) ?></th>
             <th>Fin</th>
             <th>Motif</th>
-            <th>Statut</th>
+            <th><?= sortLinkReservation('statut', 'Statut', $filtres) ?></th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -92,6 +111,11 @@
                     </a>
                     <a href="index.php?controller=reservation&action=reject&id=<?= $r['id'] ?>" class="btn btn-sm btn-danger-soft btn-sm-action">
                         <i class="fa-solid fa-xmark"></i> Refuser
+                    </a>
+                <?php endif; ?>
+                <?php if (in_array($r['statut'], ['en_attente', 'validee'], true)): ?>
+                    <a href="index.php?controller=reservation&action=reschedule&id=<?= $r['id'] ?>" class="btn btn-sm btn-outline-light btn-sm-action">
+                        <i class="fa-solid fa-arrows-turn-right"></i> Déplacer
                     </a>
                 <?php endif; ?>
             </td>

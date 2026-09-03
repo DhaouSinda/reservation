@@ -25,7 +25,16 @@ class Salle extends Model
             $params['statut'] = $filtres['statut'];
         }
 
-        $sql .= " ORDER BY b.nom, e.numero, s.nom";
+        $colonnesTri = [
+            'nom' => 's.nom',
+            'batiment' => 'b.nom',
+            'capacite' => 's.capacite',
+            'statut' => 's.statut',
+        ];
+        $triCol = $colonnesTri[$filtres['tri'] ?? ''] ?? 'b.nom';
+        $ordre = strtoupper($filtres['ordre'] ?? 'ASC') === 'DESC' ? 'DESC' : 'ASC';
+
+        $sql .= " ORDER BY $triCol $ordre";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         return $stmt->fetchAll();

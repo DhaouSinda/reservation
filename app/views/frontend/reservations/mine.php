@@ -18,15 +18,29 @@
         </div>
     </div>
 <?php else: ?>
+<?php
+function sortLinkMine($colKey, $label, $tri, $ordre) {
+    $currentTri = $tri ?: 'date_debut';
+    $currentOrdre = $ordre ?: 'DESC';
+    $nextOrdre = ($currentTri === $colKey && $currentOrdre === 'ASC') ? 'DESC' : 'ASC';
+    $params = ['controller' => 'reservation', 'action' => 'mine', 'tri' => $colKey, 'ordre' => $nextOrdre];
+    $icon = '';
+    if ($currentTri === $colKey) {
+        $icon = $currentOrdre === 'ASC' ? ' <i class="fa-solid fa-arrow-up-short-wide"></i>' : ' <i class="fa-solid fa-arrow-down-wide-short"></i>';
+    }
+    return '<a href="index.php?' . http_build_query($params) . '" class="text-decoration-none" style="color: inherit;">' . $label . $icon . '</a>';
+}
+?>
+
 <div class="table-responsive">
     <table class="table align-middle">
         <thead>
         <tr>
-            <th>Salle</th>
-            <th>Début</th>
+            <th><?= sortLinkMine('salle', 'Salle', $tri, $ordre) ?></th>
+            <th><?= sortLinkMine('date_debut', 'Début', $tri, $ordre) ?></th>
             <th>Fin</th>
             <th>Motif</th>
-            <th>Statut</th>
+            <th><?= sortLinkMine('statut', 'Statut', $tri, $ordre) ?></th>
             <th>Actions</th>
         </tr>
         </thead>

@@ -3,13 +3,19 @@ require_once __DIR__ . '/Model.php';
 
 class Batiment extends Model
 {
-    public function getAll(string $recherche = ''): array
+    public function getAll(string $recherche = '', string $tri = 'nom', string $ordre = 'ASC'): array
     {
+        $colonnesAutorisees = ['nom', 'adresse'];
+        if (!in_array($tri, $colonnesAutorisees, true)) {
+            $tri = 'nom';
+        }
+        $ordre = strtoupper($ordre) === 'DESC' ? 'DESC' : 'ASC';
+
         if ($recherche !== '') {
-            $stmt = $this->pdo->prepare("SELECT * FROM batiments WHERE nom LIKE :recherche ORDER BY nom");
+            $stmt = $this->pdo->prepare("SELECT * FROM batiments WHERE nom LIKE :recherche ORDER BY $tri $ordre");
             $stmt->execute(['recherche' => '%' . $recherche . '%']);
         } else {
-            $stmt = $this->pdo->query("SELECT * FROM batiments ORDER BY nom");
+            $stmt = $this->pdo->query("SELECT * FROM batiments ORDER BY $tri $ordre");
         }
         return $stmt->fetchAll();
     }

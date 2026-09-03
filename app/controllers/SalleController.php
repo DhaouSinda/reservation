@@ -33,6 +33,8 @@ class SalleController
             'recherche' => trim($_GET['recherche'] ?? ''),
             'batiment_id' => $_GET['batiment_id'] ?? '',
             'statut' => $_GET['statut'] ?? '',
+            'tri' => $_GET['tri'] ?? '',
+            'ordre' => $_GET['ordre'] ?? 'ASC',
         ];
         $salles = $this->salleModel->getAll($filtres);
         $batimentsListe = $this->batimentModel->getAll();

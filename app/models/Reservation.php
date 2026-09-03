@@ -33,20 +33,37 @@ class Reservation extends Model
             $params['date_fin'] = $filtres['date_fin'] . ' 23:59:59';
         }
 
-        $sql .= " ORDER BY r.date_debut DESC";
+        $colonnesTri = [
+            'date_debut' => 'r.date_debut',
+            'salle' => 's.nom',
+            'utilisateur' => 'u.nom',
+            'statut' => 'r.statut',
+        ];
+        $triCol = $colonnesTri[$filtres['tri'] ?? ''] ?? 'r.date_debut';
+        $ordre = strtoupper($filtres['ordre'] ?? 'DESC') === 'ASC' ? 'ASC' : 'DESC';
+
+        $sql .= " ORDER BY $triCol $ordre";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         return $stmt->fetchAll();
     }
 
-    public function getByUser(int $userId): array
+    public function getByUser(int $userId, string $tri = 'date_debut', string $ordre = 'DESC'): array
     {
+        $colonnesTri = [
+            'date_debut' => 'r.date_debut',
+            'salle' => 's.nom',
+            'statut' => 'r.statut',
+        ];
+        $triCol = $colonnesTri[$tri] ?? 'r.date_debut';
+        $ordre = strtoupper($ordre) === 'ASC' ? 'ASC' : 'DESC';
+
         $stmt = $this->pdo->prepare(
             "SELECT r.*, s.nom AS salle_nom
              FROM reservations r
              JOIN salles s ON r.salle_id = s.id
              WHERE r.utilisateur_id = :uid
-             ORDER BY r.date_debut DESC"
+             ORDER BY $triCol $ordre"
         );
         $stmt->execute(['uid' => $userId]);
         return $stmt->fetchAll();
@@ -118,6 +135,40 @@ class Reservation extends Model
     {
         $stmt = $this->pdo->prepare("DELETE FROM reservations WHERE id = :id");
         return $stmt->execute(['id' => $id]);
+    }
+
+    public function getBySalleForCalendar(int $salleId): array
+    {
+        $stmt = $this->pdo->prepare(
+            "SELECT id, date_debut, date_fin, statut FROM reservations
+             WHERE salle_id = :salle_id AND statut IN ('en_attente', 'validee')"
+        );
+        $stmt->execute(['salle_id' => $salleId]);
+        $rows = $stmt->fetchAll();
+
+        $events = [];
+        foreach ($rows as $r) {
+            $events[] = [
+                'title' => $r['statut'] === 'validee' ? 'Réservé' : 'En attente',
+                'start' => str_replace(' ', 'T', $r['date_debut']),
+                'end' => str_replace(' ', 'T', $r['date_fin']),
+                'color' => $r['statut'] === 'validee' ? '#f87171' : '#fbbf24',
+            ];
+        }
+        return $events;
+    }
+
+    public function reschedule(int $id, int $salleId, string $dateDebut, string $dateFin): bool
+    {
+        $stmt = $this->pdo->prepare(
+            "UPDATE reservations SET salle_id = :salle_id, date_debut = :date_debut, date_fin = :date_fin WHERE id = :id"
+        );
+        return $stmt->execute([
+            'salle_id' => $salleId,
+            'date_debut' => $dateDebut,
+            'date_fin' => $dateFin,
+            'id' => $id,
+        ]);
     }
 
     public function getStatsBySalle(): array

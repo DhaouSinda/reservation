@@ -32,4 +32,11 @@ class Utilisateur extends Model
     {
         return password_verify($plainPassword, $hashedPassword);
     }
+
+    public function getAllByRole(string $role): array
+    {
+        $stmt = $this->pdo->prepare("SELECT id, nom, prenom, email FROM utilisateurs WHERE role = :role ORDER BY nom");
+        $stmt->execute(['role' => $role]);
+        return $stmt->fetchAll();
+    }
 }

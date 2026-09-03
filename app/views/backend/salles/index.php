@@ -55,16 +55,30 @@
         </div>
     </div>
 <?php else: ?>
+<?php
+function sortLinkSalle($colKey, $label, $filtres) {
+    $currentTri = $filtres['tri'] ?: 'nom';
+    $currentOrdre = $filtres['ordre'] ?: 'ASC';
+    $nextOrdre = ($currentTri === $colKey && $currentOrdre === 'ASC') ? 'DESC' : 'ASC';
+    $params = array_merge($filtres, ['controller' => 'salle', 'action' => 'index', 'tri' => $colKey, 'ordre' => $nextOrdre]);
+    $icon = '';
+    if ($currentTri === $colKey) {
+        $icon = $currentOrdre === 'ASC' ? ' <i class="fa-solid fa-arrow-up-short-wide"></i>' : ' <i class="fa-solid fa-arrow-down-wide-short"></i>';
+    }
+    return '<a href="index.php?' . http_build_query($params) . '" class="text-decoration-none" style="color: inherit;">' . $label . $icon . '</a>';
+}
+?>
+
 <div class="table-responsive">
     <table class="table align-middle">
         <thead>
         <tr>
-            <th>Nom</th>
-            <th>Bâtiment</th>
+            <th><?= sortLinkSalle('nom', 'Nom', $filtres) ?></th>
+            <th><?= sortLinkSalle('batiment', 'Bâtiment', $filtres) ?></th>
             <th>Étage</th>
-            <th>Capacité</th>
+            <th><?= sortLinkSalle('capacite', 'Capacité', $filtres) ?></th>
             <th>Équipements</th>
-            <th>Statut</th>
+            <th><?= sortLinkSalle('statut', 'Statut', $filtres) ?></th>
             <th>Actions</th>
         </tr>
         </thead>

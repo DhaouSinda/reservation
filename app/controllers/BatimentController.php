@@ -30,7 +30,9 @@ class BatimentController
     public function index(): void
     {
         $recherche = trim($_GET['recherche'] ?? '');
-        $batiments = $this->batimentModel->getAll($recherche);
+        $tri = $_GET['tri'] ?? 'nom';
+        $ordre = $_GET['ordre'] ?? 'ASC';
+        $batiments = $this->batimentModel->getAll($recherche, $tri, $ordre);
         require __DIR__ . '/../views/backend/batiments/index.php';
     }
 

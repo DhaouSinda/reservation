@@ -38,12 +38,26 @@
         </div>
     </div>
 <?php else: ?>
+<?php
+function sortLinkBatiment($colKey, $label, $recherche, $tri, $ordre) {
+    $currentTri = $tri ?: 'nom';
+    $currentOrdre = $ordre ?: 'ASC';
+    $nextOrdre = ($currentTri === $colKey && $currentOrdre === 'ASC') ? 'DESC' : 'ASC';
+    $params = ['controller' => 'batiment', 'action' => 'index', 'recherche' => $recherche, 'tri' => $colKey, 'ordre' => $nextOrdre];
+    $icon = '';
+    if ($currentTri === $colKey) {
+        $icon = $currentOrdre === 'ASC' ? ' <i class="fa-solid fa-arrow-up-short-wide"></i>' : ' <i class="fa-solid fa-arrow-down-wide-short"></i>';
+    }
+    return '<a href="index.php?' . http_build_query($params) . '" class="text-decoration-none" style="color: inherit;">' . $label . $icon . '</a>';
+}
+?>
+
 <div class="table-responsive">
     <table class="table align-middle">
         <thead>
         <tr>
-            <th>Nom</th>
-            <th>Adresse</th>
+            <th><?= sortLinkBatiment('nom', 'Nom', $recherche, $tri, $ordre) ?></th>
+            <th><?= sortLinkBatiment('adresse', 'Adresse', $recherche, $tri, $ordre) ?></th>
             <th>Actions</th>
         </tr>
         </thead>
