@@ -26,7 +26,7 @@
 <?php else: ?>
 <div class="card" style="max-width: 620px;">
     <div class="card-body p-4">
-        <form action="index.php?controller=reservation&action=processCreateManuelle" method="POST">
+        <form id="formManuelle" action="index.php?controller=reservation&action=processCreateManuelle" method="POST">
             <div class="mb-3">
                 <label class="form-label">Utilisateur</label>
                 <select name="utilisateur_id" class="form-select" required>
@@ -76,5 +76,25 @@
     </div>
 </div>
 <?php endif; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('formManuelle');
+    if (!form) return;
+    form.addEventListener('submit', function(e) {
+        const debut = form.querySelector('[name="date_debut"]');
+        const fin = form.querySelector('[name="date_fin"]');
+        if (!debut.value || !fin.value) {
+            e.preventDefault();
+            alert('Veuillez remplir les dates de début et de fin.');
+            return;
+        }
+        if (new Date(fin.value) <= new Date(debut.value)) {
+            e.preventDefault();
+            alert('La date de fin doit être après la date de début.');
+        }
+    });
+});
+</script>
 
 <?php require __DIR__ . '/../layout_footer.php'; ?>

@@ -54,6 +54,10 @@ function sortLinkMine($colKey, $label, $tri, $ordre) {
             <td><span class="badge-statut badge-<?= htmlspecialchars($r['statut']) ?>"><?= htmlspecialchars($r['statut']) ?></span></td>
             <td>
                 <?php if ($r['statut'] === 'en_attente' || $r['statut'] === 'validee'): ?>
+                    <a href="index.php?controller=reservation&action=edit&id=<?= $r['id'] ?>"
+                       class="btn btn-sm btn-outline-success">
+                        <i class="fa-solid fa-pen"></i> Modifier
+                    </a>
                     <a href="index.php?controller=reservation&action=cancel&id=<?= $r['id'] ?>"
                        class="btn btn-sm btn-outline-danger"
                        onclick="return confirm('Annuler cette réservation ?');">

@@ -137,13 +137,19 @@ class Reservation extends Model
         return $stmt->execute(['id' => $id]);
     }
 
-    public function getBySalleForCalendar(int $salleId): array
+    public function getBySalleForCalendar(int $salleId, ?int $excludeId = null): array
     {
-        $stmt = $this->pdo->prepare(
-            "SELECT id, date_debut, date_fin, statut FROM reservations
-             WHERE salle_id = :salle_id AND statut IN ('en_attente', 'validee')"
-        );
-        $stmt->execute(['salle_id' => $salleId]);
+        $sql = "SELECT id, date_debut, date_fin, statut FROM reservations
+                WHERE salle_id = :salle_id AND statut IN ('en_attente', 'validee')";
+        $params = ['salle_id' => $salleId];
+
+        if ($excludeId !== null) {
+            $sql .= " AND id != :exclude_id";
+            $params['exclude_id'] = $excludeId;
+        }
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
         $rows = $stmt->fetchAll();
 
         $events = [];

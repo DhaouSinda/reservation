@@ -84,16 +84,31 @@ class Salle extends Model
         return $stmt->execute(['id' => $id]);
     }
 
-    public function getAvailable(): array
+    public function getAvailable(array $filtres = []): array
     {
-        $stmt = $this->pdo->query(
-            "SELECT s.*, e.numero AS etage_numero, b.nom AS batiment_nom
-             FROM salles s
-             JOIN etages e ON s.etage_id = e.id
-             JOIN batiments b ON e.batiment_id = b.id
-             WHERE s.statut = 'disponible'
-             ORDER BY b.nom, e.numero, s.nom"
-        );
+        $sql = "SELECT s.*, e.numero AS etage_numero, b.nom AS batiment_nom, b.id AS batiment_id
+                FROM salles s
+                JOIN etages e ON s.etage_id = e.id
+                JOIN batiments b ON e.batiment_id = b.id
+                WHERE s.statut = 'disponible'";
+        $params = [];
+
+        if (!empty($filtres['capacite_min'])) {
+            $sql .= " AND s.capacite >= :capacite_min";
+            $params['capacite_min'] = (int)$filtres['capacite_min'];
+        }
+        if (!empty($filtres['batiment_id'])) {
+            $sql .= " AND b.id = :batiment_id";
+            $params['batiment_id'] = (int)$filtres['batiment_id'];
+        }
+        if (!empty($filtres['equipements'])) {
+            $sql .= " AND s.equipements LIKE :equipements";
+            $params['equipements'] = '%' . $filtres['equipements'] . '%';
+        }
+
+        $sql .= " ORDER BY b.nom, e.numero, s.nom";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
         return $stmt->fetchAll();
     }
 }

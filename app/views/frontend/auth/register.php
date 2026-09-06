@@ -31,7 +31,7 @@
                     </div>
                     <div class="mb-4">
                         <label class="form-label">Mot de passe</label>
-                        <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+                        <input type="password" name="password" class="form-control" placeholder="•••••••• (8 caractères min.)" minlength="8" required>
                     </div>
                     <button type="submit" class="btn btn-success w-100">S'inscrire</button>
                 </form>

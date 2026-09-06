@@ -2,8 +2,8 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
-        <h2 class="page-title"><i class="fa-solid fa-calendar-plus"></i> Réserver une salle</h2>
-        <p class="page-subtitle">Choisissez une salle, puis cliquez un créneau libre sur le calendrier</p>
+        <h2 class="page-title"><i class="fa-solid fa-calendar-pen"></i> Modifier ma réservation</h2>
+        <p class="page-subtitle">Changez la salle ou l'horaire de cette réservation</p>
     </div>
     <a href="index.php?controller=reservation&action=mine" class="btn btn-outline-success">
         <i class="fa-solid fa-clock-rotate-left"></i> Mes réservations
@@ -14,64 +14,18 @@
     <div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation me-1"></i> <?= htmlspecialchars($error) ?></div>
 <?php endif; ?>
 
-<?php if (empty($salles)): ?>
-    <div class="card">
-        <div class="empty-state">
-            <i class="fa-solid fa-door-closed"></i>
-            <p>Aucune salle disponible pour le moment.</p>
-        </div>
-    </div>
-<?php else: ?>
-<div class="card p-3 mb-4">
-    <form action="index.php" method="GET" class="row g-2 align-items-end">
-        <input type="hidden" name="controller" value="reservation">
-        <input type="hidden" name="action" value="create">
-        <div class="col-md-3">
-            <label class="form-label">Capacité minimale</label>
-            <input type="number" name="capacite_min" min="1" class="form-control" placeholder="Ex: 10" value="<?= htmlspecialchars($_GET['capacite_min'] ?? '') ?>">
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Bâtiment</label>
-            <select name="batiment_id" class="form-select">
-                <option value="">Tous</option>
-                <?php foreach ($batimentsListe as $b): ?>
-                    <option value="<?= $b['id'] ?>" <?= (string)($_GET['batiment_id'] ?? '') === (string)$b['id'] ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($b['nom']) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <label class="form-label">Équipements</label>
-            <input type="text" name="equipements" class="form-control" placeholder="Ex: Vidéoprojecteur" value="<?= htmlspecialchars($_GET['equipements'] ?? '') ?>">
-        </div>
-        <div class="col-md-2 d-flex gap-2">
-            <button type="submit" class="btn btn-success flex-fill"><i class="fa-solid fa-filter"></i></button>
-            <a href="index.php?controller=reservation&action=create" class="btn btn-outline-success" title="Réinitialiser">
-                <i class="fa-solid fa-xmark"></i>
-            </a>
-        </div>
-    </form>
-</div>
-
-<?php if (empty($salles)): ?>
-    <div class="card">
-        <div class="empty-state">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <p>Aucune salle ne correspond à ces critères.</p>
-        </div>
-    </div>
-<?php else: ?>
 <div class="row g-4">
     <div class="col-lg-5">
         <div class="card">
             <div class="card-body p-4">
-                <form id="formReservation" action="index.php?controller=reservation&action=processCreate" method="POST">
+                <form id="formReservation" action="index.php?controller=reservation&action=processEdit" method="POST">
+                    <input type="hidden" name="id" value="<?= $reservation['id'] ?>">
+
                     <div class="mb-3">
                         <label class="form-label">Salle</label>
                         <select name="salle_id" id="salleSelect" class="form-select" required>
                             <?php foreach ($salles as $s): ?>
-                                <option value="<?= $s['id'] ?>">
+                                <option value="<?= $s['id'] ?>" <?= (int)$reservation['salle_id'] === (int)$s['id'] ? 'selected' : '' ?>>
                                     <?= htmlspecialchars($s['batiment_nom']) ?> — Étage <?= $s['etage_numero'] ?>
                                     — <?= htmlspecialchars($s['nom']) ?> (capacité <?= $s['capacite'] ?>)
                                 </option>
@@ -81,22 +35,21 @@
 
                     <div class="mb-3">
                         <label class="form-label">Date et heure de début</label>
-                        <input type="datetime-local" name="date_debut" id="dateDebutInput" class="form-control" required>
+                        <input type="datetime-local" name="date_debut" id="dateDebutInput" class="form-control"
+                               value="<?= htmlspecialchars(str_replace(' ', 'T', substr($reservation['date_debut'], 0, 16))) ?>" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Date et heure de fin</label>
-                        <input type="datetime-local" name="date_fin" id="dateFinInput" class="form-control" required>
+                        <input type="datetime-local" name="date_fin" id="dateFinInput" class="form-control"
+                               value="<?= htmlspecialchars(str_replace(' ', 'T', substr($reservation['date_fin'], 0, 16))) ?>" required>
                     </div>
 
                     <div class="mb-4">
                         <label class="form-label">Motif</label>
-                        <input type="text" name="motif" class="form-control" placeholder="Ex: Réunion d'équipe">
+                        <input type="text" name="motif" class="form-control" value="<?= htmlspecialchars($reservation['motif']) ?>">
                     </div>
 
-                    <button type="submit" class="btn btn-success w-100"><i class="fa-solid fa-check"></i> Réserver</button>
-                    <p class="mt-2 mb-0" style="color: var(--muted); font-size: 0.85rem;">
-                        <i class="fa-solid fa-circle-info"></i> Astuce : cliquez-glissez un créneau libre sur le calendrier pour remplir les dates automatiquement.
-                    </p>
+                    <button type="submit" class="btn btn-success w-100"><i class="fa-solid fa-check"></i> Enregistrer les modifications</button>
                 </form>
             </div>
         </div>
@@ -108,8 +61,6 @@
         </div>
     </div>
 </div>
-<?php endif; ?>
-<?php endif; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales-all.global.min.js"></script>
@@ -119,6 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const dateDebutInput = document.getElementById('dateDebutInput');
     const dateFinInput = document.getElementById('dateFinInput');
     const calendarEl = document.getElementById('calendar');
+    const reservationId = <?= (int)$reservation['id'] ?>;
     if (!calendarEl || !salleSelect) return;
 
     function toLocalInputValue(date) {
@@ -150,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function loadEvents() {
         const salleId = salleSelect.value;
-        fetch('index.php?controller=reservation&action=calendarEvents&salle_id=' + encodeURIComponent(salleId))
+        fetch('index.php?controller=reservation&action=calendarEvents&salle_id=' + encodeURIComponent(salleId) + '&exclude_id=' + reservationId)
             .then(res => res.json())
             .then(events => {
                 calendar.removeAllEvents();

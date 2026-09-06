@@ -39,4 +39,11 @@ class Utilisateur extends Model
         $stmt->execute(['role' => $role]);
         return $stmt->fetchAll();
     }
+
+    public function getById(int $id): array|false
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM utilisateurs WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch();
+    }
 }
