@@ -212,4 +212,49 @@ class Reservation extends Model
         $stmt->execute(['date_debut' => $dateDebut, 'date_fin' => $dateFin]);
         return $stmt->fetchAll();
     }
+
+    public function getStatsForPeriod(string $dateDebut, string $dateFin): array
+    {
+        $reservations = $this->getByPeriod($dateDebut, $dateFin);
+
+        $total = count($reservations);
+        $parStatut = ['en_attente' => 0, 'validee' => 0, 'refusee' => 0, 'annulee' => 0];
+        $parSalle = [];
+        $parJour = [];
+        $dureeTotaleMinutes = 0;
+        $dureeCount = 0;
+
+        foreach ($reservations as $r) {
+            if (isset($parStatut[$r['statut']])) {
+                $parStatut[$r['statut']]++;
+            }
+
+            $salleKey = $r['salle_nom'];
+            $parSalle[$salleKey] = ($parSalle[$salleKey] ?? 0) + 1;
+
+            $jourKey = substr($r['date_debut'], 0, 10);
+            $parJour[$jourKey] = ($parJour[$jourKey] ?? 0) + 1;
+
+            if (in_array($r['statut'], ['validee', 'en_attente'], true)) {
+                $minutes = (strtotime($r['date_fin']) - strtotime($r['date_debut'])) / 60;
+                $dureeTotaleMinutes += $minutes;
+                $dureeCount++;
+            }
+        }
+
+        arsort($parSalle);
+        arsort($parJour);
+
+        return [
+            'total' => $total,
+            'par_statut' => $parStatut,
+            'par_salle' => $parSalle,
+            'salle_top' => $parSalle ? array_key_first($parSalle) : null,
+            'salle_top_count' => $parSalle ? reset($parSalle) : 0,
+            'jour_top' => $parJour ? array_key_first($parJour) : null,
+            'jour_top_count' => $parJour ? reset($parJour) : 0,
+            'duree_moyenne_minutes' => $dureeCount > 0 ? $dureeTotaleMinutes / $dureeCount : 0,
+            'taux_validation' => $total > 0 ? round(($parStatut['validee'] / $total) * 100, 1) : 0,
+        ];
+    }
 }

@@ -442,3 +442,26 @@ a:hover {
 .stat-purple { background: linear-gradient(135deg, #8b7cf6, #5b4fc7); }
 .stat-green { background: linear-gradient(135deg, #34d399, #0f9d68); }
 .stat-orange { background: linear-gradient(135deg, #fb923c, #c2620d); }
+
+/* ===== Force dark table backgrounds (override Bootstrap's own table CSS variables) ===== */
+.table {
+    background-color: var(--slate-light) !important;
+    color: var(--text) !important;
+}
+
+.table > :not(caption) > * > * {
+    background-color: transparent !important;
+    color: var(--text) !important;
+    border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+    box-shadow: none !important;
+}
+
+.table thead th {
+    background-color: var(--accent-soft) !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+
+.table tbody tr:hover > * {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+}
