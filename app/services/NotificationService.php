@@ -5,8 +5,8 @@ class NotificationService
     // Coordonnées SMTP à personnaliser pour un envoi réel (ex: Gmail avec mot de passe d'application)
     private const SMTP_HOST = 'smtp.gmail.com';
     private const SMTP_PORT = 587;
-    private const SMTP_USERNAME = 'votre-email@gmail.com';
-    private const SMTP_PASSWORD = 'votre-mot-de-passe-application';
+    private const SMTP_USERNAME = 'dhaousinda2004@gmail.com';
+    private const SMTP_PASSWORD = 'owqe rjpz fpdj xyjv';
     private const EXPEDITEUR_NOM = 'BookIt';
 
     private static function chargerPHPMailer(): bool
