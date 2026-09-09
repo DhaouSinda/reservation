@@ -5,19 +5,20 @@
     <p class="page-subtitle">Mettez à jour les caractéristiques et le statut</p>
 </div>
 
+<div id="jsErrors" class="alert alert-danger" style="display:none;"></div>
 <div class="card" style="max-width: 620px;">
     <div class="card-body p-4">
-        <form action="index.php?controller=salle&action=processEdit" method="POST">
+        <form id="formSalleEdit" action="index.php?controller=salle&action=processEdit" method="POST" novalidate>
             <input type="hidden" name="id" value="<?= $salle['id'] ?>">
 
             <div class="mb-3">
                 <label class="form-label">Nom</label>
-                <input type="text" name="nom" class="form-control" value="<?= htmlspecialchars($salle['nom']) ?>" required>
+                <input type="text" name="nom" id="nomInput" class="form-control" value="<?= htmlspecialchars($salle['nom']) ?>">
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Capacité</label>
-                <input type="number" name="capacite" class="form-control" value="<?= (int)$salle['capacite'] ?>" min="1" required>
+                <input type="number" name="capacite" id="capaciteInput" class="form-control" value="<?= (int)$salle['capacite'] ?>">
             </div>
 
             <div class="mb-3">
@@ -44,5 +45,28 @@
         </form>
     </div>
 </div>
+
+<script>
+document.getElementById('formSalleEdit').addEventListener('submit', function (e) {
+    const nom = document.getElementById('nomInput').value.trim();
+    const capacite = document.getElementById('capaciteInput').value;
+    const erreurs = [];
+
+    if (nom === '') erreurs.push('Le nom de la salle est requis.');
+    if (capacite === '' || !Number.isInteger(Number(capacite)) || Number(capacite) <= 0) {
+        erreurs.push('La capacité doit être un nombre entier supérieur à 0.');
+    }
+
+    const box = document.getElementById('jsErrors');
+    if (erreurs.length > 0) {
+        e.preventDefault();
+        box.innerHTML = erreurs.join('<br>');
+        box.style.display = 'block';
+        box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+        box.style.display = 'none';
+    }
+});
+</script>
 
 <?php require __DIR__ . '/../layout_footer.php'; ?>

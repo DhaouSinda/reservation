@@ -26,9 +26,9 @@
             <button type="submit" class="btn btn-primary flex-fill">
                 <i class="fa-solid fa-filter"></i> Filtrer
             </button>
-            <a href="index.php?controller=statistique&action=exportCsv&date_debut=<?= urlencode($dateDebut) ?>&date_fin=<?= urlencode($dateFin) ?>"
-               class="btn btn-outline-light" title="Exporter en CSV">
-                <i class="fa-solid fa-file-csv"></i>
+            <a href="index.php?controller=statistique&action=exportPdf&date_debut=<?= urlencode($dateDebut) ?>&date_fin=<?= urlencode($dateFin) ?>"
+               class="btn btn-outline-light" title="Exporter en PDF">
+                <i class="fa-solid fa-file-pdf"></i>
             </a>
         </div>
     </form>

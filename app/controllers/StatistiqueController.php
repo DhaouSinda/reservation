@@ -41,32 +41,30 @@ class StatistiqueController
         require __DIR__ . '/../views/backend/statistiques/rapport.php';
     }
 
-    public function exportCsv(): void
+    public function exportPdf(): void
     {
         $dateDebut = $_GET['date_debut'] ?? date('Y-m-01');
         $dateFin = $_GET['date_fin'] ?? date('Y-m-t');
 
         $reservations = $this->reservationModel->getByPeriod($dateDebut . ' 00:00:00', $dateFin . ' 23:59:59');
+        $stats = $this->reservationModel->getStatsForPeriod($dateDebut . ' 00:00:00', $dateFin . ' 23:59:59');
 
-        header('Content-Type: text/csv; charset=utf-8');
-        header('Content-Disposition: attachment; filename=rapport_' . $dateDebut . '_' . $dateFin . '.csv');
-
-        $output = fopen('php://output', 'w');
-        fputcsv($output, ['Utilisateur', 'Salle', 'Batiment', 'Debut', 'Fin', 'Motif', 'Statut']);
-
-        foreach ($reservations as $r) {
-            fputcsv($output, [
-                $r['user_prenom'] . ' ' . $r['user_nom'],
-                $r['salle_nom'],
-                $r['batiment_nom'],
-                $r['date_debut'],
-                $r['date_fin'],
-                $r['motif'],
-                $r['statut'],
-            ]);
+        $autoload = __DIR__ . '/../../vendor/autoload.php';
+        if (!file_exists($autoload)) {
+            die("Dompdf n'est pas installé. Exécutez : composer require dompdf/dompdf");
         }
+        require_once $autoload;
 
-        fclose($output);
+        ob_start();
+        require __DIR__ . '/../views/backend/statistiques/rapport_pdf.php';
+        $html = ob_get_clean();
+
+        $dompdf = new Dompdf\Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $dompdf->stream('rapport_bookit_' . $dateDebut . '_' . $dateFin . '.pdf', ['Attachment' => true]);
         exit;
     }
 }
