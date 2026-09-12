@@ -74,6 +74,34 @@ Utilisateur ──< Réservation >── Salle ──< Étage ──< Bâtiment
 - `salles` — rooms, linked to a floor, with capacity/equipment/status
 - `reservations` — bookings, linked to both a room and a user, with conflict-safe time ranges
 
+## 📸 Screenshots
+
+### Public / User side
+
+| Home Page | Sign In | Log In |
+|---|---|---|
+| ![Home Page](screenshots/Home%20Page.png) | ![Sign In](screenshots/Sign%20In.png) | ![Log In](screenshots/Log%20In.png) |
+
+| Interactive Calendar | My Reservations |
+|---|---|
+| ![Interactive Calendar](screenshots/Interactive%20Calendar.png) | ![My Reservations](screenshots/My%20Reservations.png) |
+
+### Admin / Manager side
+
+| Admin Dashboard | Building Management | Room Management |
+|---|---|---|
+| ![Admin Dashboard](screenshots/Admin%20Dashboard.png) | ![Building Management](screenshots/Building%20Management.png) | ![Room Management](screenshots/Room%20management.png) |
+
+| User Management | Reservation Management |
+|---|---|
+| ![User Management](screenshots/User%20Management.png) | ![Reservation Management](screenshots/Reservation%20Management.png) |
+
+### Stats & Reports
+
+| Stats Dashboard | PDF Export |
+|---|---|
+| ![Stats](screenshots/Stats.png) | ![Pdf Export](screenshots/Pdf%20Export.png) |
+
 ## 🚀 Getting Started
 
 1. Clone the repository:
